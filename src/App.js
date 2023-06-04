@@ -1,25 +1,35 @@
-import logo from './logo.svg';
 import './App.css';
+import { RouterProvider } from 'react-router-dom';
+import { useContext, useEffect, useMemo } from 'react';
+import { publicRouter } from './navigation/PublicRouter';
+import { privateRouter } from './navigation/PrivateRouter';
+import { GlobalContext } from './context';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const { state, actions } = useContext(GlobalContext)
+  const { login } = state
+  const email = localStorage.getItem('email')
+
+  useEffect(() => {
+    if (email)
+      actions.loginsAction(true)
+    else
+      actions.loginsAction(false)
+  }, [email, login])
+
+  if (login === true) {
+    return (
+      <RouterProvider router={privateRouter} />
+    )
+  }
+  else if (login === false)
+    return (
+      <RouterProvider router={publicRouter} />
+    );
+  else if (login === null || email === undefined)
+    return (
+      <div>Loading....</div>
+    );
 }
 
 export default App;
